@@ -2,6 +2,7 @@
   "dependencies": {
     "babel": "^5.5.5",
     "express": "^4.12.4",
+    "fluqs": "^1.0.2",
     "react": "^0.13.3",
     "socket.io": "^1.3.5"
   },

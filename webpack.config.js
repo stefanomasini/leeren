@@ -5,7 +5,7 @@ module.exports = {
         filename: "client-bundle.js"
     },
     resolve: {
-        modulesDirectories: ['node_modules', 'bower_components']
+        modulesDirectories: ['node_modules', 'bower_components', 'js']
     },
     module: {
         loaders: [
