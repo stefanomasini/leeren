@@ -1,21 +1,32 @@
 import React from "react";
 
 import actions from "actions";
-import { Clock } from "views/clock";
+import { Clock, Hour } from "views/clock";
 import { ClockStore } from "store";
 
-
-const MINUTE = 1 / 12 / 60;
+const Button = React.createClass({
+    render() {
+        return <div>
+            <button className="btn btn-default btn-lg" {...this.props} style={{width: 100, margin: 5}}>{this.props.children}</button>
+        </div>;
+    }
+});
 
 const Main = React.createClass({
     render() {
-        return <div>
-            <button className="btn btn-default" onClick={() => actions.clock.animateTo(this.props.clockStore.pos + 5*MINUTE)} disabled={this.props.clockStore.animation}>+5 min</button>
-            <button className="btn btn-default" onClick={() => actions.clock.animateTo(this.props.clockStore.pos - 5*MINUTE)} disabled={this.props.clockStore.animation}>-5 min</button>
-            <button className="btn btn-default" onClick={() => actions.clock.animateTo(this.props.clockStore.pos + 30*MINUTE)} disabled={this.props.clockStore.animation}>+30 min</button>
-            <button className="btn btn-default" onClick={() => actions.clock.animateTo(this.props.clockStore.pos - 30*MINUTE)} disabled={this.props.clockStore.animation}>-30 min</button>
-            <div>
-                <Clock size={300} store={this.props.clockStore}/>
+        return <div className="row" style={{margin: 20}}>
+            <div className="col-md-4" style={{textAlign: 'center'}}>
+                <div>
+                    <Clock size={300} store={this.props.clockStore}/>
+                </div>
+                <Hour store={this.props.clockStore}/>
+            </div>
+            <div className="col-md-4">
+                <Button onClick={() => actions.clock.addMinutes(5)} disabled={this.props.clockStore.animation}>+5 min</Button>
+                <Button onClick={() => actions.clock.addMinutes(-5)} disabled={this.props.clockStore.animation}>-5 min</Button>
+                <Button onClick={() => actions.clock.addMinutes(30)} disabled={this.props.clockStore.animation}>+30 min</Button>
+                <Button onClick={() => actions.clock.addMinutes(-30)} disabled={this.props.clockStore.animation}>-30 min</Button>
+                <Button onClick={() => actions.clock.goToRandom()} disabled={this.props.clockStore.animation}>Random</Button>
             </div>
         </div>;
     }

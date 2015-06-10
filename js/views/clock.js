@@ -47,3 +47,13 @@ export const Clock = React.createClass({
         </svg>;
     }
 });
+
+export const Hour = React.createClass({
+    mixins: [forceUpdateMixin(function () { return this.props.store.changeEvent; })],
+    render() {
+        return <p style={{fontSize: 24, margin: 10}}>
+            <b>{this.props.store.hour} : {(this.props.store.minute < 10 ? '0' : '') + this.props.store.minute}</b><br/>
+            {this.props.store.name}
+        </p>;
+    }
+});
