@@ -75,35 +75,42 @@ function buildDutchName(hour, minute) {
 
 export class ClockStore {
     constructor() {
+        this.reset();
+        this.changeEvent = buildEvent();
+    }
+
+    reset() {
         this.hour = 12;
         this.minute = 0;
         this.pos = 0;
         this._buildName();
         this.animation = false;
+    }
 
-        this.changeEvent = buildEvent();
+    addMinutes(minutes) {
+        if (this.animation) {
+            return;
+        }
+        this.minute += minutes;
+        this._normalize();
+        this._buildName();
+        this._animateTo(calcPos({ hour: this.hour, minute: this.minute }));
+    }
 
-        actions.clock.addMinutes.listen(minutes => {
-            if (this.animation) {
-                return;
-            }
-            this.minute += minutes;
-            this._normalize();
-            this._buildName();
-            this._animateTo(calcPos({ hour: this.hour, minute: this.minute }));
-        });
+    getTimeStr() {
+        return `${this.hour} : ${this.minute < 10 ? ('0' + this.minute) : this.minute}`;
+    }
 
-        actions.clock.goToRandom.listen(() => {
-            if (this.animation) {
-                return;
-            }
-            const t = randomTime();
-            this.hour = t.hour;
-            this.minute = t.minute;
-            this._normalize();
-            this._buildName();
-            this._animateTo(calcPos(t));
-        });
+    goToRandom() {
+        if (this.animation) {
+            return;
+        }
+        const t = randomTime();
+        this.hour = t.hour;
+        this.minute = t.minute;
+        this._normalize();
+        this._buildName();
+        this._animateTo(calcPos(t));
     }
 
     _animateTo(newPos) {

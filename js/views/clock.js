@@ -50,10 +50,22 @@ export const Clock = React.createClass({
 
 export const Hour = React.createClass({
     mixins: [forceUpdateMixin(function () { return this.props.store.changeEvent; })],
+    propTypes: {
+        numbers: React.PropTypes.bool,
+        text: React.PropTypes.bool
+    },
+    getDefaultProps() {
+        return {
+            numbers: true,
+            text: true
+        };
+    },
     render() {
+        const numbers = this.props.numbers ? <b>{this.props.store.getTimeStr()}</b> : null;
+        const br = this.props.numbers && this.props.text ? <br/> : null;
+        const text = this.props.text ? this.props.store.name : null;
         return <p style={{fontSize: 24, margin: 10}}>
-            <b>{this.props.store.hour} : {(this.props.store.minute < 10 ? '0' : '') + this.props.store.minute}</b><br/>
-            {this.props.store.name}
+            {numbers} {br} {text}
         </p>;
     }
 });
