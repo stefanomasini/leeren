@@ -87,6 +87,64 @@ export class ClockStore {
         this.animation = false;
     }
 
+    move(direction) {
+        if (this.moving && direction) {
+            return;
+        }
+        this.moving = direction;
+        if (direction) {
+            setTimeout(() => {
+                if (this.moving) {
+                    this._startMoving(direction);
+                } else {
+                    if (direction === 'right') {
+                        this.addMinutes(5);
+                    } else {
+                        this.addMinutes(-5);
+                    }
+                }
+            }, 200);
+        } else if (this.movingDirection) {
+            this._stopMoving();
+        }
+    }
+
+    _startMoving(direction) {
+        const SPEED = 0.0001;
+        this.movingDirection = direction;
+        var _animate = () => {
+            if (this.moving === null) {
+                return;
+            }
+            var animationStarted = Date.now();
+            requestAnimationFrame(() => {
+                if (this.moving === null) {
+                    return;
+                }
+                const elapsed = Date.now() - animationStarted;
+                this.pos += (this.movingDirection === 'right' ? 1 : -1) * elapsed * SPEED;
+                this.changeEvent();
+                _animate();
+            });
+        };
+        _animate();
+    }
+
+    _stopMoving() {
+        var currentMinuteFloat = this.pos * 12 * 12;
+        while (currentMinuteFloat < 0) {
+            currentMinuteFloat += 12 * 12;
+        }
+        const minuteTo = (this.movingDirection == 'right') ? Math.ceil(currentMinuteFloat) : Math.floor(currentMinuteFloat);
+        const posTo = minuteTo / 12 / 12;
+        this.minute = (minuteTo % (12*12)) * 5;
+        this.hour = 12;
+        this.movingDirection = null;
+        this._normalize();
+        this._buildName();
+        this._animateTo(posTo);
+    }
+
     addMinutes(minutes) {
         if (this.animation) {
             return;

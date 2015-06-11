@@ -7,17 +7,24 @@ import { ClockStore } from "stores/clock";
 import { MainStore } from "stores/main";
 import { Button, Glyphicon, TabbedArea, TabPane } from "react-bootstrap";
 
+
 const Btn = React.createClass({
     render() {
         return <Button
                     style={{width: this.props.width || 60, margin: 5}}
-                    onClick={this.props.onClick}
-                    onTouchStart={this.onClick}
+                    onTouchStart={this.onDown}
+                    onMouseDown={this.onDown}
+                    onTouchEnd={this.onUp}
+                    onMouseUp={this.onUp}
                 {...this.props}>{this.props.children}</Button>;
     },
-    onClick(e) {
+    onDown(e) {
         e.preventDefault();
-        this.props.onClick();
+        this.props.onDown && this.props.onDown();
+    },
+    onUp(e) {
+        e.preventDefault();
+        this.props.onUp && this.props.onUp();
     }
 });
 
@@ -29,21 +36,15 @@ const ClockTab = React.createClass({
             </div>
             <Hour store={this.props.mainStore.mainClockStore}/>
             <div>
-                <Btn onClick={() => actions.clock.addMinutes(-30)}>
-                    <Glyphicon glyph='triangle-left'/><Glyphicon glyph='triangle-left'/>
-                </Btn>
-                <Btn onClick={() => actions.clock.addMinutes(-5)}>
+                <Btn onDown={() => actions.clock.move('left')} onUp={() => actions.clock.move(null)}>
                     <Glyphicon glyph='triangle-left'/>
                 </Btn>
-                <Btn onClick={() => actions.clock.addMinutes(5)}>
+                <Btn onDown={() => actions.clock.move('right')} onUp={() => actions.clock.move(null)}>
                     <Glyphicon glyph='triangle-right'/>
-                </Btn>
-                <Btn onClick={() => actions.clock.addMinutes(30)}>
-                    <Glyphicon glyph='triangle-right'/><Glyphicon glyph='triangle-right'/>
                 </Btn>
             </div>
             <div>
-                <Btn onClick={() => actions.clock.goToRandom()} width={100}>Random</Btn>
+                <Btn onDown={() => actions.clock.goToRandom()} width={100}>Random</Btn>
             </div>
         </div>;
     }
@@ -66,17 +67,11 @@ const GameTab = React.createClass({
             </div>
             <Hour store={this.props.mainStore.secondaryClockStore} numbers={false}/>
             <div>
-                <Btn onClick={() => actions.clock.addMinutes(-30)}>
-                    <Glyphicon glyph='triangle-left'/><Glyphicon glyph='triangle-left'/>
-                </Btn>
-                <Btn onClick={() => actions.clock.addMinutes(-5)}>
+                <Btn onDown={() => actions.clock.move('left')} onUp={() => actions.clock.move(null)}>
                     <Glyphicon glyph='triangle-left'/>
                 </Btn>
-                <Btn onClick={() => actions.clock.addMinutes(5)}>
+                <Btn onDown={() => actions.clock.move('right')} onUp={() => actions.clock.move(null)}>
                     <Glyphicon glyph='triangle-right'/>
-                </Btn>
-                <Btn onClick={() => actions.clock.addMinutes(30)}>
-                    <Glyphicon glyph='triangle-right'/><Glyphicon glyph='triangle-right'/>
                 </Btn>
             </div>
             <div>

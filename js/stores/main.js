@@ -13,6 +13,7 @@ export class MainStore {
 
         actions.clock.addMinutes.listen(minutes => this.mainClockStore.addMinutes(minutes));
         actions.clock.goToRandom.listen(() => this.mainClockStore.goToRandom());
+        actions.clock.move.listen(direction => this.mainClockStore.move(direction));
 
         actions.clock.selectTab.listen(tab => {
             this.selectedTab = tab;
