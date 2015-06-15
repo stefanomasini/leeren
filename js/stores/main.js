@@ -1,13 +1,16 @@
 import { buildEvent } from "fluqs";
 import actions from "actions";
 import { ClockStore } from "stores/clock";
+import { TafelsStore } from "stores/tafels";
 
 
 export class MainStore {
     constructor() {
-        this.selectedTab = 'clock';
+        this.selectedTab = 'tafels';
         this.mainClockStore = new ClockStore();
         this.secondaryClockStore = new ClockStore();
+        this.tafelsStore = new TafelsStore();
+        this.correct = null;
 
         this.changeEvent = buildEvent();
 
@@ -17,20 +20,32 @@ export class MainStore {
 
         actions.clock.selectTab.listen(tab => {
             this.selectedTab = tab;
-            this.mainClockStore.reset();
-            this.secondaryClockStore.goToRandom();
+            if (this.selectedTab === 'game') {
+                this.mainClockStore.reset();
+                this.secondaryClockStore.goToRandom();
+            } else if (this.selectedTab === 'tafels') {
+                this.tafelsStore.reset();
+            }
             this.correct = null;
             this.changeEvent();
         });
 
         actions.clock.checkCorrectness.listen(() => {
-            this.correct = (this.mainClockStore.getTimeStr() === this.secondaryClockStore.getTimeStr());
+            if (this.selectedTab === 'game') {
+                this.correct = (this.mainClockStore.getTimeStr() === this.secondaryClockStore.getTimeStr());
+            } else if (this.selectedTab === 'tafels') {
+                this.correct = this.tafelsStore.checkCorrectness();
+            }
             this.changeEvent();
         });
 
         actions.clock.tryAgain.listen(() => {
-            this.mainClockStore.reset();
-            this.secondaryClockStore.goToRandom();
+            if (this.selectedTab === 'game') {
+                this.mainClockStore.reset();
+                this.secondaryClockStore.goToRandom();
+            } else if (this.selectedTab === 'tafels') {
+                this.tafelsStore.reset();
+            }
             this.correct = null;
             this.changeEvent();
         });

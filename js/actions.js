@@ -7,6 +7,7 @@ export default buildActions({
         goToRandom: [],
         selectTab: [/* tab */ String],
         checkCorrectness: [],
-        tryAgain: []
-    }
+        tryAgain: [],
+    },
+    digitPressed: [/* digit */ Number]
 });

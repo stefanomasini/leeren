@@ -1,11 +1,14 @@
 import React from "react";
 
 import actions from "actions";
-import { forceUpdateMixin } from "fluqs";
+import { forceUpdateMixin, setDebug } from "fluqs";
 import { Clock, Hour } from "views/clock";
 import { ClockStore } from "stores/clock";
 import { MainStore } from "stores/main";
 import { Button, Glyphicon, TabbedArea, TabPane } from "react-bootstrap";
+
+
+//setDebug(true);
 
 
 const Btn = React.createClass({
@@ -50,17 +53,21 @@ const ClockTab = React.createClass({
     }
 });
 
+const DoneAndStatus = React.createClass({
+    render() {
+        if (this.props.mainStore.correct === null) {
+            return <Button bsSize='large' onClick={() => actions.clock.checkCorrectness()} width={100}>Klaar</Button>;
+        } else if (this.props.mainStore.correct) {
+            return <Button bsSize='large' bsStyle='success' onClick={() => actions.clock.tryAgain()} width={100}><Glyphicon glyph='thumbs-up'/> Nog een keer</Button>;
+        } else {
+            return <Button bsSize='large' bsStyle='danger' onClick={() => actions.clock.checkCorrectness()} width={100}><Glyphicon glyph='thumbs-down'/> Probeer opniew</Button>;
+        }
+    }
+});
+
 const GameTab = React.createClass({
     mixins: [forceUpdateMixin(function () { return this.props.mainStore.changeEvent; })],
     render() {
-        let status = null;
-        if (this.props.mainStore.correct === null) {
-            status = <Button bsSize='large' onClick={() => actions.clock.checkCorrectness()} width={100}>Klaar</Button>;
-        } else if (this.props.mainStore.correct) {
-            status = <Button bsSize='large' bsStyle='success' onClick={() => actions.clock.tryAgain()} width={100}><Glyphicon glyph='thumbs-up'/> Nog een keer</Button>;
-        } else {
-            status = <Button bsSize='large' bsStyle='danger' onClick={() => actions.clock.checkCorrectness()} width={100}><Glyphicon glyph='thumbs-down'/> Probeer opniew</Button>;
-        }
         return <div style={{textAlign: 'center', margin: 10}}>
             <div>
                 <Clock size={300} store={this.props.mainStore.mainClockStore}/>
@@ -75,7 +82,7 @@ const GameTab = React.createClass({
                 </Btn>
             </div>
             <div>
-                {status}
+                <DoneAndStatus {...this.props}/>
             </div>
         </div>;
     },
@@ -85,6 +92,53 @@ const GameTab = React.createClass({
         } else {
             actions.clock.checkCorrectness();
         }
+    }
+});
+
+const Digit = React.createClass({
+    render() {
+        return <Button bsSize="large" onTouchStart={this.onDown} onMouseDown={this.onDown}>{this.props.value}</Button>
+    },
+    onDown(e) {
+        e.preventDefault();
+        actions.digitPressed(this.props.value);
+    }
+});
+
+const Backspace = React.createClass({
+    render() {
+        return <Button bsSize="large" style={{width: 90}} onTouchStart={this.onDown} onMouseDown={this.onDown}><Glyphicon glyph='arrow-left'/></Button>
+    },
+    onDown(e) {
+        e.preventDefault();
+        actions.digitPressed('delete');
+    }
+});
+
+const TafelsTab = React.createClass({
+    mixins: [forceUpdateMixin(function () { return this.props.store.changeEvent; })],
+    render() {
+        const [a, b, c] = this.props.store.getOperands();
+        return <div style={{textAlign: 'center', margin: 10}}>
+            <div>
+                <h2>{a} x {b} = {c}</h2>
+            </div>
+            <div style={{margin: 20}}>
+                <Digit value="7"/>
+                <Digit value="8"/>
+                <Digit value="9"/><br/>
+                <Digit value="4"/>
+                <Digit value="5"/>
+                <Digit value="6"/><br/>
+                <Digit value="1"/>
+                <Digit value="2"/>
+                <Digit value="3"/><br/>
+                <Digit value="0"/><Backspace/>
+            </div>
+            <div style={{margin: 20}}>
+                <DoneAndStatus {...this.props}/>
+            </div>
+        </div>;
     }
 });
 
@@ -98,6 +152,9 @@ const Main = React.createClass({
                 </TabPane>
                 <TabPane eventKey={'game'} tab='Game'>
                     <GameTab {...this.props}/>
+                </TabPane>
+                <TabPane eventKey={'tafels'} tab='Tafels'>
+                    <TafelsTab store={this.props.mainStore.tafelsStore} {...this.props}/>
                 </TabPane>
             </TabbedArea>
         </div>;
